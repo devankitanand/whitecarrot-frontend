@@ -9,29 +9,44 @@ async function handleRequest(request, { params }) {
 
   const headers = {}
   request.headers.forEach((value, key) => {
-    if (!['host', 'connection'].includes(key.toLowerCase())) {
+    const lowerKey = key.toLowerCase()
+    if (!['host', 'connection', 'content-length'].includes(lowerKey)) {
       headers[key] = value
     }
   })
+
+  let body = null
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    const contentType = request.headers.get('content-type') || ''
+    if (contentType.includes('application/json')) {
+      try {
+        const json = await request.json()
+        body = JSON.stringify(json)
+        headers['Content-Type'] = 'application/json'
+      } catch (error) {
+        console.error('Error reading request body:', error)
+        return Response.json({ error: 'Failed to read request body' }, { status: 400 })
+      }
+    } else {
+      try {
+        body = await request.text()
+        if (contentType) {
+          headers['Content-Type'] = contentType
+        }
+      } catch (error) {
+        console.error('Error reading request body:', error)
+        return Response.json({ error: 'Failed to read request body' }, { status: 400 })
+      }
+    }
+  }
 
   const requestOptions = {
     method: request.method,
     headers: headers,
   }
 
-  if (request.method !== 'GET' && request.method !== 'HEAD') {
-    try {
-      const contentType = request.headers.get('content-type') || ''
-      if (contentType.includes('application/json')) {
-        const json = await request.json()
-        requestOptions.body = JSON.stringify(json)
-        headers['Content-Type'] = 'application/json'
-      } else {
-        requestOptions.body = await request.text()
-      }
-    } catch (error) {
-      console.error('Error reading request body:', error)
-    }
+  if (body !== null) {
+    requestOptions.body = body
   }
 
   try {
