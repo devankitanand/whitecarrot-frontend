@@ -46,11 +46,12 @@ const PreviewPage = ({ companySlug }) => {
       jobs={jobs}
       isPreview={true}
       onBack={() => router.push(`/${companySlug}/edit`)}
+      companySlug={companySlug}
     />
   )
 }
 
-export const CareersPageContent = ({ company, jobs, isPreview = false, onBack }) => {
+export const CareersPageContent = ({ company, jobs, isPreview = false, onBack, companySlug }) => {
   const [filters, setFilters] = useState({
     search: '',
     location: '',
@@ -260,7 +261,16 @@ export const CareersPageContent = ({ company, jobs, isPreview = false, onBack })
                     )}
                   </div>
                   <p className="job-description">{job.description.substring(0, 200)}...</p>
-                  <button className="job-apply-btn">Apply</button>
+                  <button 
+                    className="job-apply-btn"
+                    onClick={() => {
+                      const slug = companySlug || company.slug
+                      const jobSlug = job.slug || job._id
+                      router.push(`/${slug}/jobs/${jobSlug}`)
+                    }}
+                  >
+                    Apply
+                  </button>
                 </div>
               ))
             ) : (

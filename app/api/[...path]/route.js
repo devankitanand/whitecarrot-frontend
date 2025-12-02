@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.BACKEND_URL || 'https://whitecarrot-server.vercel.app'
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
 
 async function handleRequest(request, { params }) {
   const pathSegments = params.path || []

@@ -650,6 +650,7 @@ const JobsTab = ({ jobs, onRefresh }) => {
   const [editingJob, setEditingJob] = useState(null)
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
     department: '',
     location: '',
     jobType: 'Full-time',
@@ -658,6 +659,10 @@ const JobsTab = ({ jobs, onRefresh }) => {
     salary: { min: '', max: '', currency: 'USD' }
   })
   const [saving, setSaving] = useState(false)
+  const [checkingSlug, setCheckingSlug] = useState(false)
+  const [slugAvailable, setSlugAvailable] = useState(null)
+  const [slugError, setSlugError] = useState('')
+  const [isCurrentSlug, setIsCurrentSlug] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -677,6 +682,7 @@ const JobsTab = ({ jobs, onRefresh }) => {
       setEditingJob(null)
       setFormData({
         title: '',
+        slug: '',
         department: '',
         location: '',
         jobType: 'Full-time',
@@ -684,6 +690,9 @@ const JobsTab = ({ jobs, onRefresh }) => {
         requirements: '',
         salary: { min: '', max: '', currency: 'USD' }
       })
+      setSlugAvailable(null)
+      setSlugError('')
+      setIsCurrentSlug(false)
     } catch (err) {
       alert(err.response?.data?.error || 'Failed to save job')
     } finally {
@@ -691,10 +700,66 @@ const JobsTab = ({ jobs, onRefresh }) => {
     }
   }
 
+  const handleSlugChange = (e) => {
+    const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+    setFormData({ ...formData, slug: value })
+    const isCurrent = editingJob && value === editingJob.slug
+    setIsCurrentSlug(isCurrent)
+    if (isCurrent) {
+      setSlugAvailable(null)
+      setSlugError('')
+    } else {
+      setSlugAvailable(null)
+      setSlugError('')
+    }
+  }
+
+  const checkSlugAvailability = async () => {
+    if (!formData.slug) {
+      setSlugAvailable(null)
+      setIsCurrentSlug(false)
+      return
+    }
+    
+    if (editingJob && formData.slug === editingJob.slug) {
+      setIsCurrentSlug(true)
+      setSlugAvailable(null)
+      setSlugError('')
+      return
+    }
+    
+    setIsCurrentSlug(false)
+
+    if (!formData.slug.match(/^[a-z0-9\-]+$/)) {
+      setSlugError('Slug can only contain lowercase letters, numbers, and hyphens')
+      setSlugAvailable(false)
+      return
+    }
+
+    setCheckingSlug(true)
+    setSlugError('')
+    try {
+      const { data } = await jobAPI.checkSlugAvailability(formData.slug)
+      setSlugAvailable(data.available)
+      if (!data.available) {
+        setSlugError(`Job slug "${formData.slug}" is not available - it already exists`)
+        setSlugAvailable(false)
+      } else {
+        setSlugError('')
+      }
+    } catch (err) {
+      setSlugError(err.response?.data?.error || 'Failed to check availability')
+      setSlugAvailable(false)
+    } finally {
+      setCheckingSlug(false)
+    }
+  }
+
   const handleEdit = (job) => {
     setEditingJob(job)
     setFormData({
       title: job.title,
+      slug: job.slug || '',
       department: job.department || '',
       location: job.location,
       jobType: job.jobType,
@@ -702,6 +767,9 @@ const JobsTab = ({ jobs, onRefresh }) => {
       requirements: (job.requirements || []).join('\n'),
       salary: job.salary || { min: '', max: '', currency: 'USD' }
     })
+    setSlugAvailable(null)
+    setSlugError('')
+    setIsCurrentSlug(false)
     setShowAddForm(true)
   }
 
@@ -727,6 +795,7 @@ const JobsTab = ({ jobs, onRefresh }) => {
           setEditingJob(null)
           setFormData({
             title: '',
+            slug: '',
             department: '',
             location: '',
             jobType: 'Full-time',
@@ -734,6 +803,9 @@ const JobsTab = ({ jobs, onRefresh }) => {
             requirements: '',
             salary: { min: '', max: '', currency: 'USD' }
           })
+          setSlugAvailable(null)
+          setSlugError('')
+          setIsCurrentSlug(false)
         }} className="btn-primary">
           {showAddForm ? 'Cancel' : '+ Add Job'}
         </button>
@@ -751,6 +823,50 @@ const JobsTab = ({ jobs, onRefresh }) => {
                 required
               />
             </div>
+            <div className="form-group">
+              <label>Job Slug</label>
+              <div className="slug-input-group">
+                <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={handleSlugChange}
+                  placeholder="job-slug"
+                  pattern="[a-z0-9\-]+"
+                />
+                <button
+                  type="button"
+                  onClick={checkSlugAvailability}
+                  className="btn-secondary"
+                  disabled={checkingSlug || !formData.slug || (editingJob && formData.slug === editingJob.slug)}
+                >
+                  {checkingSlug ? 'Checking...' : 'Check Availability'}
+                </button>
+              </div>
+              {isCurrentSlug && formData.slug && (
+                <div className="availability-message current-slug">
+                  ℹ This is the current slug for this job.
+                </div>
+              )}
+              {slugAvailable === true && !isCurrentSlug && (
+                <div className="availability-message available">
+                  ✓ This slug is available!
+                </div>
+              )}
+              {slugAvailable === false && !isCurrentSlug && (
+                <div className="availability-message unavailable">
+                  ✗ {slugError || `Job slug "${formData.slug}" is not available - it already exists`}
+                </div>
+              )}
+              {slugError && slugAvailable !== false && slugAvailable !== true && !isCurrentSlug && (
+                <div className="availability-message unavailable">
+                  {slugError}
+                </div>
+              )}
+              <small>Slug can only contain lowercase letters, numbers, and hyphens</small>
+            </div>
+          </div>
+
+          <div className="form-row">
             <div className="form-group">
               <label>Department</label>
               <input

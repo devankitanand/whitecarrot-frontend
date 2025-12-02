@@ -93,7 +93,7 @@ const CareersPage = ({ companySlug }) => {
     return <div className="loading-container">Company not found</div>
   }
 
-  return <CareersPageContent company={company} jobs={jobs} />
+  return <CareersPageContent company={company} jobs={jobs} companySlug={companySlug} />
 }
 
 export default CareersPage

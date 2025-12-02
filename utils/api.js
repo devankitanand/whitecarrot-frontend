@@ -28,8 +28,10 @@ export const jobAPI = {
     if (filters.search) params.append('search', filters.search)
     return axios.get(`${API_BASE_URL}/jobs/company/${slug}?${params.toString()}`)
   },
+  getBySlug: (companySlug, jobSlug) => axios.get(`${API_BASE_URL}/jobs/company/${companySlug}/${jobSlug}`),
   getMyJobs: () => axios.get(`${API_BASE_URL}/jobs/my-jobs`),
   createJob: (data) => axios.post(`${API_BASE_URL}/jobs/my-jobs`, data),
   updateJob: (jobId, data) => axios.put(`${API_BASE_URL}/jobs/my-jobs/${jobId}`, data),
-  deleteJob: (jobId) => axios.delete(`${API_BASE_URL}/jobs/my-jobs/${jobId}`)
+  deleteJob: (jobId) => axios.delete(`${API_BASE_URL}/jobs/my-jobs/${jobId}`),
+  checkSlugAvailability: (slug) => axios.get(`${API_BASE_URL}/jobs/check-slug/${slug}`)
 }
