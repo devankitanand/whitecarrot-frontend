@@ -1,0 +1,525 @@
+.edit-page {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --primary-color: #5138ee;
+  position: relative;
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+  max-width: 400px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-success {
+  background: #10B981;
+  color: white;
+}
+
+.toast-error {
+  background: #EF4444;
+  color: white;
+}
+
+.edit-header {
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.edit-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.edit-header h1 {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.edit-header-logo img {
+  height: 32px;
+  object-fit: contain;
+}
+
+.edit-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-logout {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.edit-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 40px;
+}
+
+.edit-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.edit-tabs button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  border-radius: 8px 8px 0 0;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.edit-tabs button:hover {
+  color: var(--text-primary);
+  background: rgba(15, 23, 42, 0.03);
+}
+
+.edit-tabs button.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  background: white;
+}
+
+.edit-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(148, 163, 184, 0.15);
+}
+
+.brand-tab h2,
+.sections-tab h2,
+.jobs-tab h2,
+.slug-tab h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  color: var(--text-primary);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: rgba(148, 163, 184, 0.9);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.color-input-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.color-input-group input[type="color"] {
+  width: 60px;
+  height: 40px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.color-input-group input[type="text"] {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.sections-header,
+.jobs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.add-section-form,
+.job-form {
+  background: var(--bg-secondary);
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.sections-list,
+.jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.section-item,
+.job-item {
+  background: radial-gradient(circle at top left, rgba(248, 250, 252, 1), rgba(241, 245, 249, 1));
+  padding: 18px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.section-item:hover,
+.job-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.section-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.section-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.section-type {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: rgba(15, 23, 42, 0.04);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  letter-spacing: 0.08em;
+}
+
+.section-actions,
+.job-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  align-self: flex-start;
+}
+
+.section-content h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.section-content p {
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.section-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  border: 1px dashed rgba(148, 163, 184, 0.8);
+}
+
+.section-edit input,
+.section-edit textarea {
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.job-info h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.job-meta {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.job-status {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--success-color);
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.1s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--secondary-color);
+  box-shadow: 0 12px 25px rgba(37, 99, 235, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-secondary);
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-small:hover {
+  background: var(--bg-secondary);
+  transform: translateY(-0.5px);
+}
+
+.btn-danger {
+  color: var(--error-color);
+  border-color: var(--error-color);
+}
+
+.btn-danger:hover {
+  background: #FEF2F2;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px;
+}
+
+.slug-input-group {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.slug-input-group input {
+  flex: 1;
+}
+
+.disabled-input {
+  background: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+  cursor: not-allowed;
+}
+
+.availability-message {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.availability-message.available {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.availability-message.unavailable {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.availability-message.current-slug {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .edit-header-content {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .edit-header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .edit-header-actions button {
+    width: 100%;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sections-header,
+  .jobs-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .section-item,
+  .job-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-actions,
+  .job-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}
