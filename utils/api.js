@@ -2,6 +2,22 @@ import axios from 'axios'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api'
 
+// Add request interceptor to include auth token from localStorage
+axios.interceptors.request.use(
+  (config) => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token')
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
 export const authAPI = {
   login: (email, password) => axios.post(`${API_BASE_URL}/auth/login`, { email, password }),
   register: (email, password, companyName, companySlug) =>

@@ -7,7 +7,7 @@ import { companyAPI, jobAPI } from '../utils/api'
 import '../styles/EditPage.css'
 
 const EditPage = ({ companySlug }) => {
-  const { user, logout } = useAuth()
+  const { user, logout, loading: authLoading } = useAuth()
   const router = useRouter()
   const [company, setCompany] = useState(null)
   const [jobs, setJobs] = useState([])
@@ -16,13 +16,13 @@ const EditPage = ({ companySlug }) => {
   const [activeTab, setActiveTab] = useState('brand')
 
   useEffect(() => {
-    if (companySlug) {
+    if (companySlug && !authLoading && user) {
       loadData()
     }
-  }, [companySlug])
+  }, [companySlug, authLoading, user])
 
   const loadData = async () => {
-    if (!companySlug) return
+    if (!companySlug || authLoading || !user) return
     
     setLoading(true)
     try {
@@ -112,7 +112,7 @@ const EditPage = ({ companySlug }) => {
     }
   }
 
-  if (loading || !companySlug) {
+  if (authLoading || loading || !companySlug || !user) {
     return <div className="loading-container"><div className="loader-wrapper"><div className="spinner"></div><p className="loading-message">Loading...</p></div></div>
   }
 
