@@ -14,10 +14,15 @@ const PreviewPage = ({ companySlug }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadData()
+    if (companySlug) {
+      loadData()
+    }
   }, [companySlug])
 
   const loadData = async () => {
+    if (!companySlug) return
+    
+    setLoading(true)
     try {
       const [companyRes, jobsRes] = await Promise.all([
         companyAPI.getPublic(companySlug),
@@ -32,12 +37,12 @@ const PreviewPage = ({ companySlug }) => {
     }
   }
 
-  if (loading) {
-    return <div className="loading-container">Loading preview...</div>
+  if (loading || !companySlug) {
+    return <div className="loading-container"><div className="loader-wrapper"><div className="spinner"></div><p className="loading-message">Loading preview...</p></div></div>
   }
 
   if (!company) {
-    return <div className="loading-container">Company not found</div>
+    return <div className="loading-container"><div className="loader-wrapper"><div className="spinner"></div><p className="loading-message">Company not found</p></div></div>
   }
 
   return (

@@ -12,10 +12,15 @@ const JobDetailPage = ({ companySlug, jobSlug }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadData()
+    if (companySlug && jobSlug) {
+      loadData()
+    }
   }, [companySlug, jobSlug])
 
   const loadData = async () => {
+    if (!companySlug || !jobSlug) return
+    
+    setLoading(true)
     try {
       const [companyRes, jobRes] = await Promise.all([
         companyAPI.getPublic(companySlug),
@@ -30,12 +35,12 @@ const JobDetailPage = ({ companySlug, jobSlug }) => {
     }
   }
 
-  if (loading) {
-    return <div className="loading-container">Loading...</div>
+  if (loading || !companySlug || !jobSlug) {
+    return <div className="loading-container"><div className="loader-wrapper"><div className="spinner"></div><p className="loading-message">Loading...</p></div></div>
   }
 
   if (!company || !job) {
-    return <div className="loading-container">Job not found</div>
+    return <div className="loading-container"><div className="loader-wrapper"><div className="spinner"></div><p className="loading-message">Job not found</p></div></div>
   }
 
   const brand = company.brand || {}
