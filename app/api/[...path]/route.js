@@ -10,10 +10,16 @@ async function handleRequest(request, { params }) {
   const headers = new Headers()
   request.headers.forEach((value, key) => {
     const lowerKey = key.toLowerCase()
-    if (!['host', 'connection', 'content-length', 'cf-connecting-ip', 'cf-ray'].includes(lowerKey)) {
+    // Remove cache-related headers to prevent 304 responses
+    if (!['host', 'connection', 'content-length', 'cf-connecting-ip', 'cf-ray', 'if-none-match', 'if-modified-since', 'cache-control'].includes(lowerKey)) {
       headers.set(key, value)
     }
   })
+  
+  // Add cache control headers to prevent caching
+  headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+  headers.set('Pragma', 'no-cache')
+  headers.set('Expires', '0')
 
   let body = undefined
   const contentType = request.headers.get('content-type') || ''
@@ -57,10 +63,17 @@ async function handleRequest(request, { params }) {
     
     response.headers.forEach((value, key) => {
       const lowerKey = key.toLowerCase()
-      if (!['content-encoding', 'transfer-encoding', 'content-length'].includes(lowerKey)) {
+      if (!['content-encoding', 'transfer-encoding', 'content-length', 'etag', 'last-modified'].includes(lowerKey)) {
         responseHeaders.set(key, value)
       }
     })
+    
+    // Override cache control headers to prevent caching
+    responseHeaders.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    responseHeaders.set('Pragma', 'no-cache')
+    responseHeaders.set('Expires', '0')
+    responseHeaders.set('Surrogate-Control', 'no-store')
+    
     responseHeaders.set('Access-Control-Allow-Origin', '*')
     responseHeaders.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
     responseHeaders.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
