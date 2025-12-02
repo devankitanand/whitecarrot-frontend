@@ -7,55 +7,57 @@ async function handleRequest(request, { params }) {
   const queryString = searchParams ? `?${searchParams}` : ''
   const backendUrl = `${BACKEND_URL}/api/${apiPath}${queryString}`
 
-  const headers = {}
+  const headers = new Headers()
   request.headers.forEach((value, key) => {
     const lowerKey = key.toLowerCase()
-    if (!['host', 'connection', 'content-length'].includes(lowerKey)) {
-      headers[key] = value
+    if (!['host', 'connection', 'content-length', 'cf-connecting-ip', 'cf-ray'].includes(lowerKey)) {
+      headers.set(key, value)
     }
   })
 
-  let body = null
+  let body = undefined
+  const contentType = request.headers.get('content-type') || ''
+
   if (request.method !== 'GET' && request.method !== 'HEAD') {
-    const contentType = request.headers.get('content-type') || ''
-    if (contentType.includes('application/json')) {
-      try {
+    try {
+      if (contentType.includes('application/json')) {
         const json = await request.json()
         body = JSON.stringify(json)
-        headers['Content-Type'] = 'application/json'
-      } catch (error) {
-        console.error('Error reading request body:', error)
-        return Response.json({ error: 'Failed to read request body' }, { status: 400 })
-      }
-    } else {
-      try {
+        headers.set('Content-Type', 'application/json')
+      } else {
         body = await request.text()
         if (contentType) {
-          headers['Content-Type'] = contentType
+          headers.set('Content-Type', contentType)
         }
-      } catch (error) {
-        console.error('Error reading request body:', error)
-        return Response.json({ error: 'Failed to read request body' }, { status: 400 })
       }
+    } catch (error) {
+      console.error('Error reading request body:', error)
+      return Response.json({ error: 'Failed to read request body' }, { status: 400 })
     }
   }
 
-  const requestOptions = {
-    method: request.method,
-    headers: headers,
-  }
-
-  if (body !== null) {
-    requestOptions.body = body
-  }
+  const fetchHeaders = {}
+  headers.forEach((value, key) => {
+    fetchHeaders[key] = value
+  })
 
   try {
-    const response = await fetch(backendUrl, requestOptions)
-    const contentType = response.headers.get('content-type') || ''
+    const fetchOptions = {
+      method: request.method,
+      headers: fetchHeaders,
+    }
+    
+    if (body !== undefined) {
+      fetchOptions.body = body
+    }
+
+    const response = await fetch(backendUrl, fetchOptions)
+    const responseContentType = response.headers.get('content-type') || ''
     const responseHeaders = new Headers()
     
     response.headers.forEach((value, key) => {
-      if (!['content-encoding', 'transfer-encoding'].includes(key.toLowerCase())) {
+      const lowerKey = key.toLowerCase()
+      if (!['content-encoding', 'transfer-encoding', 'content-length'].includes(lowerKey)) {
         responseHeaders.set(key, value)
       }
     })
@@ -64,7 +66,7 @@ async function handleRequest(request, { params }) {
     responseHeaders.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     responseHeaders.set('Access-Control-Allow-Credentials', 'true')
     
-    if (contentType.includes('application/json')) {
+    if (responseContentType.includes('application/json')) {
       const data = await response.json()
       return Response.json(data, {
         status: response.status,
@@ -80,8 +82,8 @@ async function handleRequest(request, { params }) {
       })
     }
   } catch (error) {
-    console.error('Proxy error:', error)
-    return Response.json({ error: 'Proxy request failed' }, {
+    console.error('Proxy error:', error, 'URL:', backendUrl)
+    return Response.json({ error: 'Proxy request failed', details: error.message }, {
       status: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -121,4 +123,3 @@ export async function OPTIONS() {
     },
   })
 }
-
